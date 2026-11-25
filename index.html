@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Carpe Diem is a free, journal-style habit tracker. Mark your habits each day, see the month at a glance, and follow your streaks and weekly trends. No account needed.">
+<meta name="theme-color" content="#FBFBF9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A1B1D" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Carpe Diem Habit Journal">
+<meta property="og:description" content="A free habit tracker that looks like a paper journal. No account needed.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 64 64&quot;%3E%3Ccircle cx=&quot;32&quot; cy=&quot;32&quot; r=&quot;29&quot; fill=&quot;%23FCFCFA&quot; stroke=&quot;%23B8322C&quot; stroke-width=&quot;4&quot;/%3E%3Cpath d=&quot;M44 22.5 L51.5 27.5 L44 32 C44.5 40 40 46 32 47.5 C26 49 21 48 18 46 L7 55.5 L10 50 L3.5 51.5 L15.5 40.5 C17 33 22 27.5 27.5 25.5 L24.5 10.5 L35 17.5 C39 17.5 42.5 19.5 44 22.5 Z&quot; fill=&quot;%23B8322C&quot;/%3E%3Cpath d=&quot;M14 53 Q32 49.5 54 51.5&quot; fill=&quot;none&quot; stroke=&quot;%23B8322C&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot;/%3E%3Cpath d=&quot;M21 37 C27 34.5 33 36.5 35.5 42.5&quot; fill=&quot;none&quot; stroke=&quot;%23FCFCFA&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot;/%3E%3Ccircle cx=&quot;39.5&quot; cy=&quot;23&quot; r=&quot;1.7&quot; fill=&quot;%23FCFCFA&quot;/%3E%3C/svg%3E">
+<!-- Ads: once Google AdSense approves your site, paste the AdSense code snippet it gives you right here, above </head>. -->
+<title>Carpe Diem Habit Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap">
+<style>
+/* Layout: a printed page. Hairline grid paper, a masthead with the date set in large numerals,
+   then Today / Trends side by side on wide screens, the month as a full-width ruled grid, and the habit list. */
+:root{
+  --desk:#EEEEEB; --paper:#FBFBF9; --grid:#ECECE8; --rule:#D3D3CD; --line:#B9B9B2;
+  --ink:#1F2024; --ink-soft:rgba(31,32,36,.22); --muted:#6B6C70; --faint:#C6C6C0; --hover:rgba(31,32,36,.05);
+  --cardinal:#B8322C; --cardinal-soft:rgba(184,50,44,.07);
+  --font-body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Segoe UI",system-ui,sans-serif;
+  --cell:30px;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#121314; --paper:#1A1B1D; --grid:#222326; --rule:#36373A; --line:#4A4B4F;
+    --ink:#EAE8E3; --ink-soft:rgba(234,232,227,.24); --muted:#9C9C98; --faint:#4A4B4F; --hover:rgba(234,232,227,.06);
+    --cardinal:#E0625A; --cardinal-soft:rgba(224,98,90,.10);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#121314; --paper:#1A1B1D; --grid:#222326; --rule:#36373A; --line:#4A4B4F;
+  --ink:#EAE8E3; --ink-soft:rgba(234,232,227,.24); --muted:#9C9C98; --faint:#4A4B4F; --hover:rgba(234,232,227,.06);
+  --cardinal:#E0625A; --cardinal-soft:rgba(224,98,90,.10);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 40px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--cardinal);outline-offset:2px}
+
+.page{max-width:1180px;margin:0 auto;background-color:var(--paper);border:1px solid var(--rule);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:14px 14px;background-position:-1px -1px;
+  padding:32px clamp(16px,4vw,48px) 24px}
+
+/* masthead */
+.masthead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 32px;
+  padding-bottom:20px;border-bottom:1px solid var(--ink);margin-bottom:32px}
+.brand{display:flex;align-items:center;gap:12px}
+.seal{width:44px;height:44px;flex:none;border:1.5px solid var(--cardinal);color:var(--cardinal);display:grid;place-items:center}
+.seal svg{width:32px;height:32px}
+.brand h1{margin:0;font-weight:700;font-size:20px;line-height:1;letter-spacing:.02em}
+.dateline{display:flex;align-items:flex-end;gap:14px}
+.daynum{font-weight:300;font-size:clamp(64px,10vw,104px);line-height:.78;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.datemeta{display:flex;flex-direction:column;gap:2px;padding-bottom:2px;font-size:13px;line-height:1.35}
+.datemeta .wd{font-weight:700;color:var(--cardinal);text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+.datemeta .doy{color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* sections */
+.spread{display:grid;gap:40px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:1000px){
+  .spread{grid-template-columns:minmax(300px,360px) minmax(0,1fr);grid-template-areas:"today trends" "month month" "habits habits";column-gap:56px;align-items:start}
+  .s-today{grid-area:today} .s-trends{grid-area:trends} .s-month{grid-area:month} .s-habits{grid-area:habits}
+  .habit-rows{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));column-gap:40px}
+  .add{max-width:560px}
+  :root{--cell:27px}
+}
+section{min-width:0}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.shead{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.shead h2{margin:0;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.16em}
+.shead .aside{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:2px;padding:8px 16px;min-height:40px;font-weight:500;line-height:1.2}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.primary:hover{opacity:.88}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--muted);padding-inline:6px}
+.btn.quiet:hover{color:var(--ink)}
+.btn.armed{color:var(--cardinal)}
+.textlink{border:0;background:none;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;font-size:inherit}
+
+/* today */
+.todo-list{display:grid}
+.todo{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--rule);
+  padding:10px 4px;min-height:58px}
+.todo:hover{background:var(--hover)}
+.box{flex:none;width:26px;height:26px;border:1.5px solid var(--line);display:grid;place-items:center;color:transparent}
+.box svg{width:16px;height:16px}
+.todo.done .box{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.todo.just .box{animation:pop .22s ease-out}
+@keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+.todo-text{min-width:0;display:flex;flex-direction:column}
+.todo-name{font-weight:500;font-size:16px;overflow-wrap:anywhere}
+.todo-meta{font-size:13px;color:var(--muted)}
+.todo-meta b{font-weight:500;color:var(--cardinal)}
+.empty{color:var(--muted);font-size:14px;margin:4px 0}
+
+/* month grid */
+.month-nav{margin-left:auto;display:flex;align-items:center;gap:4px}
+.icon-btn{width:40px;height:36px;border:1px solid var(--line);background:var(--paper);border-radius:2px;display:grid;place-items:center;font-size:18px;line-height:1}
+.icon-btn:hover:not(:disabled){border-color:var(--ink)}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.grid-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;scrollbar-width:thin}
+table.month{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.month th,.month td{padding:0;text-align:center}
+.month thead th{font-weight:400;font-size:11px;color:var(--muted);height:40px;vertical-align:bottom;padding-bottom:5px;line-height:1.2;border-bottom:1px solid var(--ink)}
+.month thead th .dn{display:block;font-size:12px;color:var(--ink)}
+.month thead th.we .dn{color:var(--muted)}
+.month thead th.is-today{color:var(--cardinal)}
+.month thead th.is-today .dn{color:var(--cardinal);font-weight:700}
+.month .hname{position:sticky;left:0;z-index:2;background:var(--paper);text-align:left;padding-right:12px;min-width:120px;
+  font-weight:500;font-size:14px;border-right:1px solid var(--ink)}
+.month thead .hname{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:500}
+.month .hname .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
+.month tbody td,.month tbody th{border-bottom:1px solid var(--rule)}
+.month tbody td{border-left:1px solid var(--rule)}
+.month td.wk-start,.month thead th.wk-start{border-left:1px solid var(--line)}
+.month td.col-today{background:var(--cardinal-soft);box-shadow:inset 1px 0 0 var(--cardinal),inset -1px 0 0 var(--cardinal)}
+.month tbody tr:last-child td.col-today{box-shadow:inset 1px 0 0 var(--cardinal),inset -1px 0 0 var(--cardinal),inset 0 -1px 0 var(--cardinal)}
+.cell{width:100%;min-width:var(--cell);height:var(--cell);border:0;background:transparent;display:grid;place-items:center;padding:0}
+.cell:hover:not(:disabled){background:var(--hover)}
+.cell::after{content:"";width:3px;height:3px;background:var(--faint)}
+.cell.on::after{width:62%;height:62%;max-width:18px;max-height:18px;background:var(--ink)}
+.cell:disabled{cursor:default}
+.cell:disabled::after{opacity:.4}
+.month .rate{font-size:13px;color:var(--muted);padding-left:12px;min-width:50px;text-align:right;border-left:1px solid var(--ink)!important}
+.month .rate-h{text-align:right;padding-left:12px}
+.grid-hint{font-size:12px;color:var(--muted);margin:8px 0 0}
+
+/* trends */
+.stats{display:grid;margin-bottom:28px;container-type:inline-size}
+.stat{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(4,minmax(64px,.6fr)) auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.stat-head{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:0 0 6px}
+.stat .nm{font-weight:500;min-width:0;overflow-wrap:anywhere}
+.num{font-weight:400;font-size:19px;line-height:1.1;font-variant-numeric:tabular-nums}
+.num small{font-weight:400;font-size:12px;color:var(--muted);margin-left:3px}
+.lbl{display:none;font-size:11px;color:var(--muted)}
+.strip{display:flex;gap:2px}
+.strip i{width:9px;height:9px;border:1px solid var(--faint)}
+.strip i.on{background:var(--ink);border-color:var(--ink)}
+.strip i.td{outline:1px solid var(--cardinal);outline-offset:1px}
+@container (max-width:600px){
+  .stat{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 10px}
+  .stat .nm{grid-column:1/-1}
+  .stat .strip{grid-column:1/-1}
+  .stat-head{display:none}
+  .lbl{display:block}
+}
+.tabs{display:flex;flex-wrap:wrap;gap:4px 18px;margin-bottom:14px;border-bottom:1px solid var(--rule)}
+.tab{border:0;background:none;padding:8px 0;min-height:40px;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab:hover{color:var(--ink)}
+.tab[aria-pressed="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--cardinal)}
+.trend-line{font-size:15px;margin:0 0 16px}
+.trend-line strong{font-weight:700}
+.chart{display:grid;grid-template-columns:38px minmax(0,1fr);gap:0 8px}
+.yaxis{position:relative;height:170px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.yaxis span{position:absolute;right:0;transform:translateY(50%)}
+.plot{position:relative;height:170px;display:flex;align-items:flex-end;gap:clamp(3px,1.2vw,10px);border-bottom:1px solid var(--ink)}
+.plot .gl{position:absolute;left:0;right:0;border-top:1px solid var(--rule)}
+.bar{flex:1;position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.bar b{display:block;width:100%;max-width:34px;background:var(--ink-soft);min-height:1px;position:relative}
+.bar.last b{background:var(--ink)}
+.bar .val{position:absolute;font-size:12px;font-weight:700;color:var(--ink);transform:translateY(-4px)}
+.bar.empty b{background:transparent;border:1px dashed var(--faint);height:100%!important}
+.xaxis{grid-column:2;display:flex;gap:clamp(3px,1.2vw,10px);font-size:11px;color:var(--muted);padding-top:6px}
+.xaxis span{flex:1;text-align:center;white-space:nowrap;overflow:visible}
+
+/* habits */
+.example-note{font-size:13px;color:var(--muted);margin:0 0 12px}
+.habit-rows{display:grid;margin-bottom:18px}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-bottom:1px solid var(--rule)}
+.hrow input[type=text]{width:100%;min-height:48px;border:0;background:transparent;padding:6px 2px;font-size:16px;font-weight:500}
+.hrow input[type=text]:focus{outline:none;box-shadow:inset 0 -2px 0 var(--cardinal)}
+.add{display:flex;gap:8px;flex-wrap:wrap}
+.add input{flex:1 1 200px;min-height:44px;border:1px solid var(--line);border-radius:2px;background:var(--paper);padding:8px 12px;font-size:16px}
+.add input:focus{outline:none;border-color:var(--ink)}
+
+/* footer */
+.foot{margin:40px 0 0;padding-top:12px;border-top:1px solid var(--ink);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;align-items:center;font-size:12px;color:var(--muted)}
+.foot-links{display:flex;flex-wrap:wrap;gap:4px 16px}
+.foot-links a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:1px}
+.foot-links a:hover,.foot-links a:focus-visible{color:var(--cardinal);border-bottom-color:var(--cardinal);outline:none}
+
+@media (max-width:560px){
+  body{padding-block:16px 28px}
+  .page{padding:22px 14px 18px}
+  .masthead{margin-bottom:26px}
+  :root{--cell:32px}
+  .month .hname{min-width:96px;font-size:13px}
+  .month .hname .nm{max-width:104px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="brand">
+      <div class="seal" role="img" aria-label="Cardinal"><svg viewBox="2 6 56 52" aria-hidden="true"><path d="M44 22.5 L51.5 27.5 L44 32 C44.5 40 40 46 32 47.5 C26 49 21 48 18 46 L7 55.5 L10 50 L3.5 51.5 L15.5 40.5 C17 33 22 27.5 27.5 25.5 L24.5 10.5 L35 17.5 C39 17.5 42.5 19.5 44 22.5 Z" fill="currentColor"/><path d="M14 53 Q32 49.5 54 51.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M21 37 C27 34.5 33 36.5 35.5 42.5" fill="none" stroke="var(--paper)" stroke-width="2" stroke-linecap="round"/><circle cx="39.5" cy="23" r="1.7" fill="var(--paper)"/></svg></div>
+      <h1>Carpe Diem</h1>
+    </div>
+    <div class="dateline" id="dateline">
+      <div class="daynum" id="dayNum"></div>
+      <div class="datemeta">
+        <span class="wd" id="weekday"></span>
+        <span id="monthYear"></span>
+        <span class="doy" id="dayOfYear"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="spread">
+    <section class="s-today" aria-labelledby="todayTitle">
+      <div class="shead">
+        <h2 id="todayTitle">Today</h2>
+        <span class="aside" id="todayCount"></span>
+      </div>
+      <div class="todo-list" id="todayList"></div>
+    </section>
+
+    <section class="s-month" aria-labelledby="monthTitle">
+      <div class="shead">
+        <h2 id="monthTitle"></h2>
+        <div class="month-nav">
+          <button class="btn quiet" id="goToday" type="button" hidden>This month</button>
+          <button class="icon-btn" id="prevM" type="button" aria-label="Previous month">&lsaquo;</button>
+          <button class="icon-btn" id="nextM" type="button" aria-label="Next month">&rsaquo;</button>
+        </div>
+      </div>
+      <div class="grid-scroll" id="gridScroll">
+        <table class="month" id="monthTable"></table>
+      </div>
+      <p class="grid-hint">Tap any past day to mark it or clear it.</p>
+    </section>
+
+    <section class="s-trends" aria-labelledby="trendTitle">
+      <div class="shead"><h2 id="trendTitle">Trends</h2></div>
+      <div class="stats" id="stats"></div>
+      <div class="tabs" id="chips" role="group" aria-label="Show trend for"></div>
+      <p class="trend-line" id="trendLine"></p>
+      <div class="chart" id="chart"></div>
+    </section>
+
+    <section class="s-habits" aria-labelledby="habitsTitle" id="habits">
+      <div class="shead"><h2 id="habitsTitle">Habits</h2></div>
+      <p class="example-note" id="exampleNote" hidden>These are examples. <button class="textlink" id="startFresh" type="button">Clear them</button> to start your own.</p>
+      <div class="habit-rows" id="habitRows"></div>
+      <form class="add" id="addForm" autocomplete="off">
+        <label for="newHabit" class="vh">New habit</label>
+        <input id="newHabit" type="text" maxlength="60" placeholder="Add a habit, like Stretch 5 minutes">
+        <button class="btn primary" type="submit">Add</button>
+      </form>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <span>Saved in this browser only. No account needed.</span>
+    <nav class="foot-links" aria-label="More from Carpe Diem">
+      <a href="guides/">Guides</a>
+      <a href="guides/printable-habit-tracker.html">Printable tracker</a>
+      <a href="guides/privacy.html">Privacy</a>
+    </nav>
+    <button class="btn quiet" id="eraseAll" type="button">Erase everything</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var KEY = 'tsuzuku.v1';
+  var INKS = 7;
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var MON3 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var WD1 = ['S','M','T','W','T','F','S'];
+  var WDL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>';
+
+  function $(id){ return document.getElementById(id); }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function ymd(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parse(k){ var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function dayNum(d){ return Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); }
+  function midnight(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function weekStart(d){ return addDays(d, -((d.getDay() + 6) % 7)); }
+  function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function hash(s){ var h = 2166136261; for (var i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  var today = midnight(new Date());
+  var TODAY = ymd(today);
+
+  function rng(seed){ return function(){ seed = (seed + 0x6D2B79F5) | 0; var t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+  function exampleState(){
+    var r = rng(7), start = addDays(today, -90);
+    var defs = [['Read 20 minutes', 0, .40, .85], ['Walk 6,000 steps', 2, .45, .80], ['Drink 8 glasses of water', 5, .55, .90], ['Phone down by 10pm', 1, .20, .70]];
+    var s = { habits: [], marks: {}, example: true };
+    defs.forEach(function(d, i){
+      var id = 'ex' + i, m = {};
+      s.habits.push({ id: id, name: d[0], ink: d[1], created: ymd(start) });
+      for (var k = 0; k <= 90; k++){
+        if (k === 90 && i > 1) continue;
+        var p = d[2] + (d[3] - d[2]) * (k / 90);
+        if (r() < p) m[ymd(addDays(start, k))] = 1;
+      }
+      s.marks[id] = m;
+    });
+    return s;
+  }
+  function blankState(){ return { habits: [], marks: {}, example: false }; }
+
+  function load(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (!d || !Array.isArray(d.habits)) return null;
+      if (!d.marks || typeof d.marks !== 'object') d.marks = {};
+      d.habits = d.habits.filter(function(h){ return h && h.id && typeof h.name === 'string'; });
+      d.habits.forEach(function(h){ if (typeof h.ink !== 'number') h.ink = 0; if (!h.created) h.created = TODAY; if (!d.marks[h.id]) d.marks[h.id] = {}; });
+      return d;
+    } catch (e) { return null; }
+  }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var state = load() || exampleState();
+  var view = { y: today.getFullYear(), m: today.getMonth() };
+  var chartSel = 'all';
+  var justStamped = null;
+  var scrollToToday = true;
+
+  function isDone(h, k){ var m = state.marks[h.id]; return !!(m && m[k]); }
+  function toggle(h, k){
+    var m = state.marks[h.id] || (state.marks[h.id] = {});
+    if (m[k]) { delete m[k]; justStamped = null; }
+    else { m[k] = 1; justStamped = h.id + '|' + k; if (k < h.created) h.created = k; }
+    save();
+  }
+  function currentStreak(h){
+    var d = today; if (!isDone(h, ymd(d))) d = addDays(d, -1);
+    var n = 0; while (isDone(h, ymd(d))) { n++; d = addDays(d, -1); }
+    return n;
+  }
+  function bestStreak(h){
+    var keys = Object.keys(state.marks[h.id] || {}).sort(), best = 0, run = 0, prev = null;
+    keys.forEach(function(k){ var n = dayNum(parse(k)); run = (prev !== null && n - prev === 1) ? run + 1 : 1; if (run > best) best = run; prev = n; });
+    return best;
+  }
+  function tally(h, start, end){
+    var c = parse(h.created), s = start < c ? c : start, e = end > today ? today : end, poss = 0, done = 0;
+    for (var d = s; d <= e; d = addDays(d, 1)) { poss++; if (isDone(h, ymd(d))) done++; }
+    return { done: done, poss: poss };
+  }
+  function pct(t){ return t.poss ? Math.round(100 * t.done / t.poss) : null; }
+  function tallyMany(list, start, end){
+    var t = { done: 0, poss: 0 };
+    list.forEach(function(h){ var x = tally(h, start, end); t.done += x.done; t.poss += x.poss; });
+    return t;
+  }
+  function nextInk(){
+    var used = state.habits.map(function(h){ return h.ink; });
+    for (var i = 0; i < INKS; i++) if (used.indexOf(i) < 0) return i;
+    return state.habits.length % INKS;
+  }
+
+  /* ---------- header ---------- */
+  function renderHeader(){
+    var y = today.getFullYear(), doy = dayNum(today) - dayNum(new Date(y, 0, 1)) + 1, len = dayNum(new Date(y + 1, 0, 1)) - dayNum(new Date(y, 0, 1));
+    $('dayNum').textContent = pad(today.getDate());
+    $('weekday').textContent = WDL[today.getDay()];
+    $('monthYear').textContent = MONTHS[today.getMonth()] + ' ' + y;
+    $('dayOfYear').textContent = 'Day ' + doy + ' of ' + len;
+    $('dateline').setAttribute('aria-label', WDL[today.getDay()] + ', ' + MONTHS[today.getMonth()] + ' ' + today.getDate() + ', ' + y);
+    $('exampleNote').hidden = !state.example;
+  }
+
+  /* ---------- today ---------- */
+  function renderToday(){
+    var list = $('todayList'); list.textContent = '';
+    var n = 0;
+    if (!state.habits.length){
+      var p = el('p', 'empty'); p.append('No habits yet. ');
+      var a = el('button', 'textlink', 'Add your first one'); a.type = 'button';
+      a.addEventListener('click', function(){ $('newHabit').focus(); });
+      p.append(a, '.'); list.append(p);
+    }
+    state.habits.forEach(function(h){
+      var done = isDone(h, TODAY); if (done) n++;
+      var cs = currentStreak(h);
+      var b = el('button', 'todo' + (done ? ' done' : '') + (justStamped === h.id + '|' + TODAY ? ' just' : ''));
+      b.type = 'button'; b.setAttribute('aria-pressed', done ? 'true' : 'false');
+      var st = el('span', 'box'); st.setAttribute('aria-hidden', 'true'); st.innerHTML = CHECK;
+      var tx = el('span', 'todo-text');
+      tx.append(el('span', 'todo-name', h.name));
+      var meta = el('span', 'todo-meta');
+      if (cs > 1 || (cs === 1 && !done)){ meta.append(el('b', null, cs + '-day streak')); if (!done) meta.append('. Keep it going'); }
+      else meta.append(done ? 'Done today' : 'Tap to mark done');
+      tx.append(meta);
+      b.append(st, tx);
+      b.addEventListener('click', function(){ toggle(h, TODAY); render(); });
+      list.append(b);
+    });
+    $('todayCount').textContent = state.habits.length ? n + ' of ' + state.habits.length + ' done' : '';
+  }
+
+  /* ---------- month ---------- */
+  function renderMonth(){
+    var y = view.y, m = view.m, days = new Date(y, m + 1, 0).getDate();
+    $('monthTitle').textContent = MONTHS[m] + ' ' + y;
+    var isCur = y === today.getFullYear() && m === today.getMonth();
+    $('goToday').hidden = isCur;
+    $('nextM').disabled = isCur || new Date(y, m + 1, 1) > today;
+    var t = $('monthTable'); t.textContent = '';
+    var thead = el('thead'), hr = el('tr');
+    var corner = el('th', 'hname', 'Habit'); corner.scope = 'col';
+    hr.append(corner);
+    for (var d = 1; d <= days; d++){
+      var dt = new Date(y, m, d), wd = dt.getDay();
+      var th = el('th'); th.scope = 'col';
+      var cls = [];
+      if (wd === 0 || wd === 6) cls.push('we');
+      if (wd === 1 && d !== 1) cls.push('wk-start');
+      if (ymd(dt) === TODAY) cls.push('is-today', 'col-today');
+      th.className = cls.join(' ');
+      th.append(WD1[wd]); th.append(el('span', 'dn', String(d)));
+      th.setAttribute('aria-label', WDL[wd] + ' ' + d);
+      hr.append(th);
+    }
+    var rh = el('th', 'rate-h', '%'); rh.scope = 'col'; hr.append(rh);
+    thead.append(hr); t.append(thead);
+
+    var tb = el('tbody');
+    if (!state.habits.length){
+      var r0 = el('tr'), c0 = el('td'); c0.colSpan = days + 2; c0.style.textAlign = 'left';
+      c0.append(el('p', 'empty', 'Your month will fill in here once you add a habit.'));
+      r0.append(c0); tb.append(r0);
+    }
+    state.habits.forEach(function(h){
+      var tr = el('tr');
+      var nm = el('th', 'hname'); nm.scope = 'row';
+      var wrap = el('div', 'nm', h.name); wrap.title = h.name;
+      nm.append(wrap); tr.append(nm);
+      for (var d = 1; d <= days; d++){
+        var dt = new Date(y, m, d), k = ymd(dt), on = isDone(h, k);
+        var td = el('td');
+        var cls = [];
+        if (dt.getDay() === 1 && d !== 1) cls.push('wk-start');
+        if (k === TODAY) cls.push('col-today');
+        td.className = cls.join(' ');
+        var b = el('button', 'cell' + (on ? ' on' : ''));
+        b.type = 'button'; b.dataset.h = h.id; b.dataset.k = k;
+        if (dt > today) b.disabled = true;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.setAttribute('aria-label', h.name + ', ' + MON3[m] + ' ' + d);
+        td.append(b); tr.append(td);
+      }
+      var r = pct(tally(h, new Date(y, m, 1), new Date(y, m, days)));
+      tr.append(el('td', 'rate', r == null ? '–' : r + '%'));
+      tb.append(tr);
+    });
+    t.append(tb);
+
+    if (scrollToToday){
+      scrollToToday = false;
+      var sc = $('gridScroll');
+      requestAnimationFrame(function(){
+        var cell = isCur ? t.querySelector('thead th.is-today') : null;
+        if (cell){ var name = t.querySelector('.hname'); var target = cell.offsetLeft - (name ? name.offsetWidth : 0) - (sc.clientWidth - (name ? name.offsetWidth : 0)) * 0.6; sc.scrollLeft = Math.max(0, target); }
+        else sc.scrollLeft = 0;
+      });
+    }
+  }
+  $('monthTable').addEventListener('click', function(ev){
+    var b = ev.target.closest('.cell'); if (!b || b.disabled) return;
+    var h = state.habits.find(function(x){ return x.id === b.dataset.h; }); if (!h) return;
+    toggle(h, b.dataset.k); render();
+  });
+  function shiftMonth(n){ var d = new Date(view.y, view.m + n, 1); if (d > today) return; view.y = d.getFullYear(); view.m = d.getMonth(); scrollToToday = true; renderMonth(); }
+  $('prevM').addEventListener('click', function(){ shiftMonth(-1); });
+  $('nextM').addEventListener('click', function(){ shiftMonth(1); });
+  $('goToday').addEventListener('click', function(){ view.y = today.getFullYear(); view.m = today.getMonth(); scrollToToday = true; renderMonth(); });
+
+  /* ---------- trends ---------- */
+  function renderStats(){
+    var box = $('stats'); box.textContent = '';
+    if (!state.habits.length){ box.append(el('p', 'empty', 'Streaks and completion rates show up here.')); return; }
+    var head = el('div', 'stat stat-head');
+    ['Habit', 'Streak', 'Best', 'This month', 'Last 30 days', 'Last 14 days'].forEach(function(s){ head.append(el('span', null, s)); });
+    box.append(head);
+    var mStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    state.habits.forEach(function(h){
+      var row = el('div', 'stat');
+      row.append(el('div', 'nm', h.name));
+      function cell(v, unit, label){ var c = el('div'); c.append(el('span', 'lbl', label)); var n = el('span', 'num', v); if (unit) n.append(el('small', null, unit)); c.append(n); return c; }
+      var cs = currentStreak(h), bs = bestStreak(h), mp = pct(tally(h, mStart, today)), tp = pct(tally(h, addDays(today, -29), today));
+      row.append(cell(String(cs), cs === 1 ? 'day' : 'days', 'Streak'));
+      row.append(cell(String(bs), bs === 1 ? 'day' : 'days', 'Best'));
+      row.append(cell(mp == null ? '–' : mp + '%', '', 'This month'));
+      row.append(cell(tp == null ? '–' : tp + '%', '', 'Last 30 days'));
+      var strip = el('div', 'strip'); strip.setAttribute('aria-label', 'Last 14 days');
+      for (var i = 13; i >= 0; i--){ var k = ymd(addDays(today, -i)); var dot = el('i', (isDone(h, k) ? 'on' : '') + (i === 0 ? ' td' : '')); dot.title = k; strip.append(dot); }
+      row.append(strip);
+      box.append(row);
+    });
+  }
+
+  function renderChart(){
+    var chips = $('chips'); chips.textContent = '';
+    if (chartSel !== 'all' && !state.habits.some(function(h){ return h.id === chartSel; })) chartSel = 'all';
+    var opts = [{ id: 'all', name: 'All habits' }].concat(state.habits.map(function(h){ return { id: h.id, name: h.name }; }));
+    opts.forEach(function(o){
+      var b = el('button', 'tab', o.name); b.type = 'button'; b.setAttribute('aria-pressed', o.id === chartSel ? 'true' : 'false');
+      b.addEventListener('click', function(){ chartSel = o.id; renderChart(); });
+      chips.append(b);
+    });
+    var list = chartSel === 'all' ? state.habits : state.habits.filter(function(h){ return h.id === chartSel; });
+    var chart = $('chart'); chart.textContent = '';
+    var line = $('trendLine'); line.textContent = '';
+    if (!list.length){ line.textContent = 'Add a habit to see your weekly trend.'; return; }
+
+    var W = 12, ws = weekStart(today), weeks = [];
+    for (var i = W - 1; i >= 0; i--){
+      var s = addDays(ws, -7 * i), e = addDays(s, 6);
+      weeks.push({ start: s, p: pct(tallyMany(list, s, e)) });
+    }
+    var recent = pct(tallyMany(list, addDays(today, -27), today));
+    var before = pct(tallyMany(list, addDays(today, -55), addDays(today, -28)));
+    if (recent != null){
+      line.append('Last 4 weeks: ', el('strong', null, recent + '%'));
+      if (before != null){
+        var diff = recent - before;
+        line.append(diff > 0 ? ', up from ' + before + '% the 4 weeks before.' : diff < 0 ? ', down from ' + before + '% the 4 weeks before.' : ', the same as the 4 weeks before.');
+      }
+    }
+
+    var yax = el('div', 'yaxis');
+    [100, 50, 0].forEach(function(v){ var s = el('span', null, v + '%'); s.style.bottom = v + '%'; yax.append(s); });
+    var plot = el('div', 'plot');
+    plot.setAttribute('role', 'img');
+    plot.setAttribute('aria-label', 'Weekly completion, last 12 weeks: ' + weeks.map(function(w){ return MON3[w.start.getMonth()] + ' ' + w.start.getDate() + ' ' + (w.p == null ? 'no data' : w.p + '%'); }).join(', '));
+    [100, 50].forEach(function(v){ var g = el('div', 'gl'); g.style.bottom = v + '%'; plot.append(g); });
+    var xax = el('div', 'xaxis');
+    weeks.forEach(function(w, idx){
+      var last = idx === weeks.length - 1;
+      var bar = el('div', 'bar' + (last ? ' last' : '') + (w.p == null ? ' empty' : ''));
+      var b = el('b'); b.style.height = (w.p == null ? 0 : Math.max(w.p, 1)) + '%';
+      bar.title = 'Week of ' + MON3[w.start.getMonth()] + ' ' + w.start.getDate() + ': ' + (w.p == null ? 'no data' : w.p + '%');
+      bar.append(b);
+      if (last && w.p != null){ var v = el('span', 'val', w.p + '%'); v.style.bottom = w.p + '%'; bar.append(v); }
+      plot.append(bar);
+      var lab = ((weeks.length - 1 - idx) % 3 === 0) ? (last ? 'This week' : MON3[w.start.getMonth()] + ' ' + w.start.getDate()) : '';
+      xax.append(el('span', null, lab));
+    });
+    chart.append(yax, plot, xax);
+  }
+
+  /* ---------- habits editor ---------- */
+  function renderHabits(){
+    var box = $('habitRows'); box.textContent = '';
+    state.habits.forEach(function(h){
+      var row = el('div', 'hrow');
+      var inp = el('input'); inp.type = 'text'; inp.id = 'name-' + h.id; inp.value = h.name; inp.maxLength = 60;
+      inp.setAttribute('aria-label', 'Habit name');
+      inp.addEventListener('change', function(){ var v = inp.value.trim(); if (!v){ inp.value = h.name; return; } h.name = v; save(); render(true); });
+      inp.addEventListener('keydown', function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); inp.blur(); } });
+      var rm = el('button', 'btn quiet', 'Remove'); rm.type = 'button';
+      var timer = null;
+      rm.addEventListener('click', function(){
+        if (!rm.classList.contains('armed')){
+          rm.classList.add('armed'); rm.textContent = 'Tap again to remove';
+          timer = setTimeout(function(){ rm.classList.remove('armed'); rm.textContent = 'Remove'; }, 3500);
+          return;
+        }
+        clearTimeout(timer);
+        state.habits = state.habits.filter(function(x){ return x.id !== h.id; });
+        delete state.marks[h.id]; save(); render();
+      });
+      row.append(inp, rm);
+      box.append(row);
+    });
+  }
+  $('addForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var inp = $('newHabit'), v = inp.value.trim(); if (!v) { inp.focus(); return; }
+    var id = 'h' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+    state.habits.push({ id: id, name: v, ink: nextInk(), created: TODAY });
+    if (state.example) { state.example = false; }
+    state.marks[id] = {};
+    inp.value = ''; save(); render(); inp.focus();
+  });
+
+  /* ---------- examples + erase ---------- */
+  $('startFresh').addEventListener('click', function(){ state = blankState(); save(); chartSel = 'all'; render(); $('newHabit').focus(); });
+  var eraseTimer = null;
+  $('eraseAll').addEventListener('click', function(){
+    var b = $('eraseAll');
+    if (!b.classList.contains('armed')){
+      b.classList.add('armed'); b.textContent = 'Tap again to erase all habits';
+      eraseTimer = setTimeout(function(){ b.classList.remove('armed'); b.textContent = 'Erase everything'; }, 3500);
+      return;
+    }
+    clearTimeout(eraseTimer); b.classList.remove('armed'); b.textContent = 'Erase everything';
+    state = blankState(); save(); chartSel = 'all'; render();
+  });
+
+  function render(skipHabits){
+    renderHeader(); renderToday(); renderMonth(); renderStats(); renderChart();
+    if (!skipHabits) renderHabits();
+    justStamped = null;
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState !== 'visible') return;
+    var now = midnight(new Date());
+    if (ymd(now) !== TODAY){ today = now; TODAY = ymd(now); view = { y: today.getFullYear(), m: today.getMonth() }; scrollToToday = true; render(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
